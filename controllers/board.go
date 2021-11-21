@@ -3,36 +3,42 @@ package controllers
 import (
 	"fmt"
 	. "gin-example/models"
+	"gin-example/repositories"
 	. "gin-example/util"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-func GetBoard(context *gin.Context) {
-	var board Board
-	if err := DB.First(&board, context.Param("id")).Error; err != nil {
+type BoardController struct {
+	Repository *repositories.BoardRepository
+}
+
+func (api *BoardController) GetBoard(context *gin.Context) {
+	board, err := api.Repository.Retrieve(context.Param("id"))
+	if err != nil {
 		context.AbortWithStatusJSON(http.StatusNotFound, MakeErrorMessage(err))
 		return
 	}
 	context.JSON(http.StatusOK, board)
 }
 
-func GetBoards(context *gin.Context) {
-	var boards []Board
-	if err := DB.Find(&boards).Error; err != nil {
-		context.AbortWithStatusJSON(http.StatusNotFound, MakeErrorMessage(err))
+func (api *BoardController) GetBoards(context *gin.Context) {
+	boards := api.Repository.List()
+	if len(boards) < 1 {
+		context.AbortWithStatus(http.StatusNotFound)
 		return
 	}
 	context.JSON(http.StatusOK, boards)
 }
 
-func AddBoard(context *gin.Context) {
+func (api *BoardController) AddBoard(context *gin.Context) {
 	var board Board
-	if err := context.BindJSON(&board); err != nil {
+	var err error
+	if err = context.BindJSON(&board); err != nil {
 		context.AbortWithStatusJSON(http.StatusBadRequest, MakeErrorMessage(err))
 		return
 	}
-	if err := DB.Create(&board).Error; err != nil {
+	if err = api.Repository.Add(&board); err != nil {
 		context.AbortWithStatusJSON(http.StatusNotFound, MakeErrorMessage(err))
 		return
 	}
@@ -40,22 +46,22 @@ func AddBoard(context *gin.Context) {
 	context.JSON(http.StatusCreated, board)
 }
 
-func SetBoard(context *gin.Context) {
-	var board Board
+func (api *BoardController) SetBoard(context *gin.Context) {
 	var newBoard Board
 	if err := context.BindJSON(&newBoard); err != nil {
 		context.AbortWithStatusJSON(http.StatusBadRequest, MakeErrorMessage(err))
 		return
 	}
-	if err := DB.First(&board, context.Param("id")).Error; err != nil {
+	board, err := api.Repository.Retrieve(context.Param("id"))
+	if err != nil {
 		context.AbortWithStatusJSON(http.StatusNotFound, MakeErrorMessage(err))
 		return
 	}
-	DB.Model(&board).Updates(newBoard)
+	api.Repository.Set(board, &newBoard)
 	context.JSON(http.StatusOK, board)
 }
 
-func RemoveBoard(context *gin.Context) {
-	DB.Unscoped().Delete(&Board{}, context.Param("id"))
+func (api *BoardController) DeleteBoard(context *gin.Context) {
+	api.Repository.Delete(context.Param("id"))
 	context.Status(http.StatusNoContent)
 }
