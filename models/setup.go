@@ -10,7 +10,7 @@ const DbName = "example.db"
 
 var DB *gorm.DB
 
-func Migrate() {
+func Init() {
 	db, err := gorm.Open(sqlite.Open(DbName), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
 	})
