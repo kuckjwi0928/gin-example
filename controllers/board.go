@@ -19,7 +19,7 @@ func (b *BoardController) GetBoard(context *gin.Context) {
 		context.AbortWithStatusJSON(http.StatusNotFound, MakeErrorMessage(err))
 		return
 	}
-	context.JSON(http.StatusOK, board)
+	context.JSON(http.StatusOK, &board)
 }
 
 func (b *BoardController) GetBoards(context *gin.Context) {
@@ -28,7 +28,7 @@ func (b *BoardController) GetBoards(context *gin.Context) {
 		context.AbortWithStatus(http.StatusNotFound)
 		return
 	}
-	context.JSON(http.StatusOK, boards)
+	context.JSON(http.StatusOK, &boards)
 }
 
 func (b *BoardController) AddBoard(context *gin.Context) {
@@ -43,7 +43,7 @@ func (b *BoardController) AddBoard(context *gin.Context) {
 		return
 	}
 	context.Header("Location", "/v1/boards/"+fmt.Sprint(board.ID))
-	context.JSON(http.StatusCreated, board)
+	context.JSON(http.StatusCreated, &board)
 }
 
 func (b *BoardController) SetBoard(context *gin.Context) {
@@ -58,7 +58,7 @@ func (b *BoardController) SetBoard(context *gin.Context) {
 		return
 	}
 	b.Repository.Set(board, &newBoard)
-	context.JSON(http.StatusOK, board)
+	context.JSON(http.StatusOK, &board)
 }
 
 func (b *BoardController) DeleteBoard(context *gin.Context) {
