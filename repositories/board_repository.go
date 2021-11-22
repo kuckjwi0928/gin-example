@@ -9,32 +9,32 @@ type BoardRepository struct {
 	DB *gorm.DB
 }
 
-func (repo *BoardRepository) Retrieve(id string) (*models.Board, error) {
+func (b *BoardRepository) Retrieve(id string) (*models.Board, error) {
 	var board models.Board
-	if err := repo.DB.First(&board, id).Error; err != nil {
+	if err := b.DB.First(&board, id).Error; err != nil {
 		return nil, err
 	}
 	return &board, nil
 }
 
-func (repo *BoardRepository) List() []models.Board {
+func (b *BoardRepository) List() []models.Board {
 	var boards []models.Board
-	repo.DB.Find(&boards)
+	b.DB.Find(&boards)
 	return boards
 }
 
-func (repo *BoardRepository) Add(board *models.Board) error {
-	if err := repo.DB.Create(board).Error; err != nil {
+func (b *BoardRepository) Add(board *models.Board) error {
+	if err := b.DB.Create(board).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func (repo *BoardRepository) Set(board *models.Board, newBoard *models.Board) *models.Board {
-	repo.DB.Model(board).Updates(newBoard)
+func (b *BoardRepository) Set(board *models.Board, newBoard *models.Board) *models.Board {
+	b.DB.Model(board).Updates(newBoard)
 	return newBoard
 }
 
-func (repo *BoardRepository) Delete(id string) {
-	repo.DB.Unscoped().Delete(&models.Board{}, id)
+func (b *BoardRepository) Delete(id string) {
+	b.DB.Unscoped().Delete(&models.Board{}, id)
 }
