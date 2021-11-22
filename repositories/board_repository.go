@@ -30,9 +30,8 @@ func (b *BoardRepository) Add(board *models.Board) error {
 	return nil
 }
 
-func (b *BoardRepository) Set(board *models.Board, newBoard *models.Board) *models.Board {
+func (b *BoardRepository) Set(board *models.Board, newBoard *models.Board) {
 	b.DB.Model(board).Updates(newBoard)
-	return newBoard
 }
 
 func (b *BoardRepository) Delete(id string) {
