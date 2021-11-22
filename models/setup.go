@@ -7,14 +7,14 @@ import (
 )
 
 const (
-	DBName = "example.db"
-	TestDB = ":memory:"
+	dbName = "example.db"
+	testDB = ":memory:"
 )
 
 var database *gorm.DB
 
 func Init() {
-	db, err := gorm.Open(sqlite.Open(DBName), &gorm.Config{
+	db, err := gorm.Open(sqlite.Open(dbName), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
 	})
 	if err != nil {
@@ -25,7 +25,7 @@ func Init() {
 }
 
 func TestInit() {
-	db, _ := gorm.Open(sqlite.Open(TestDB), &gorm.Config{
+	db, _ := gorm.Open(sqlite.Open(testDB), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
 	})
 	_ = db.AutoMigrate(&Board{})
